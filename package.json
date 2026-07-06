@@ -1,6 +1,6 @@
 {
     "name": "PrisonRP-Launcher",
-    "productname": "PrisonRP Launcher",
+    "preductname": "PrisonRP Launcher",
     "version": "2.0.8",
     "description": "Launcher Mincraft pour le serveur PrisonRP",
     "main": "src/app.js",
@@ -10,6 +10,10 @@
         "url": "https://github.com/luuxis"
     },
     "url": "http://5.196.121.24:3000",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ZertoxUnder/PrisonRoleplay.git"
+    },
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",
         "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
