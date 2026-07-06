@@ -1,6 +1,5 @@
 const pkg = require('../package.json');
 const nodeFetch = require("node-fetch");
-const convert = require('xml-js');
 let url = pkg.user ? `${pkg.url}/${pkg.user}` : pkg.url
 
 let config = `${url}/launcher/config-launcher/config.json`;

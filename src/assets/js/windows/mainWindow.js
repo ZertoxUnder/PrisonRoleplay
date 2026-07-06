@@ -1,9 +1,11 @@
-const { app, BrowserWindow, Menu } = require("electron");
+const { app, BrowserWindow, Menu, nativeImage } = require("electron");
 const path = require("path");
 const os = require("os");
 const pkg = require("../../../../package.json");
 let dev = process.env.DEV_TOOL === 'open';
 let mainWindow = undefined;
+const iconPath = path.join(app.getAppPath(), 'src', 'assets', 'images', 'icon.ico');
+const appIcon = nativeImage.createFromPath(iconPath);
 
 function getWindow() {
     return mainWindow;
@@ -25,7 +27,7 @@ function createWindow() {
         minHeight: 552,
         resizable: false,
         maximizable: false,
-        icon: path.join(app.getAppPath(), 'src', 'assets', 'images', 'icon.ico'),
+        icon: appIcon,
         frame: os.platform() !== 'win32',
         show: false,
         transparent: true,
@@ -47,8 +49,24 @@ function createWindow() {
     });
 }
 
+// Sur Windows, une fenêtre frameless perd son icône de taskbar au show() qui
+// suit un hide() : le bouton de la taskbar est recréé par explorer.exe de façon
+// asynchrone après le show(), donc setIcon() doit être réappliqué après coup
+// (avant le show() ne suffit pas, d'où l'échec du premier correctif).
+function showWindow() {
+    if (!mainWindow) return;
+    mainWindow.show();
+    if (os.platform() === 'win32') {
+        mainWindow.setIcon(appIcon);
+        setTimeout(() => {
+            if (mainWindow) mainWindow.setIcon(appIcon);
+        }, 300);
+    }
+}
+
 module.exports = {
     getWindow,
     createWindow,
     destroyWindow,
+    showWindow,
 };

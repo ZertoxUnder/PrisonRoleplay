@@ -15,10 +15,6 @@
     min-width: 40%;
 }
 
-.login-home {
-    display: none;
-}
-
 .login-text {
     font-size: 1.3rem;
 }
@@ -46,83 +42,20 @@
     background: #B8B8B8;
 }
 
-.input-login .azuriom-email,
-.input-login .azuriom-password {
+.input-login .offline-username {
     color: white;
     background: #F99741B3;
     border: none;
     border-radius: 10px;
-    width: 100%;
+    width: 60%;
     height: 60px;
     padding: 0.5rem 3rem 0.4rem 1rem;
-    margin-top: 0;
+    margin-top: 10px;
     font-family: 'Agenor';
     font-size: 20px;
     font-weight: 400;
     text-align: center;
     box-sizing: border-box;
-}
-
-.input-login .azuriom-email {
-    width: 60%;
-    margin-top: 10px;
-    margin-bottom: 0;
-}
-
-/* ── Wrapper mot de passe ────────────────────────────── */
-.password-wrapper {
-    position: relative;
-    width: 60%;
-    margin: 10px auto 0;
-    display: flex;
-    align-items: center;
-}
-
-.password-wrapper .azuriom-password {
-    width: 100%;
-    margin-top: 0;
-}
-
-.toggle-password {
-    position: absolute;
-    right: 12px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-}
-
-.toggle-password:hover {
-    opacity: 1;
-}
-
-/* Icône œil — SVG inline via CSS mask */
-.eye-icon {
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    background-color: #ffffff;
-    -webkit-mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-}
-
-.eye-closed {
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94'/%3E%3Cpath d='M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19'/%3E%3Cline x1='1' y1='1' x2='23' y2='23'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94'/%3E%3Cpath d='M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19'/%3E%3Cline x1='1' y1='1' x2='23' y2='23'/%3E%3C/svg%3E");
-}
-
-.eye-open {
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
-    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
 }
 
 .input-login input::placeholder {
@@ -133,85 +66,4 @@
 .logo-img {
     height: 300px;
     margin-top: -57%;
-}
-
-.azuriom-register-link {
-    color: #FAEBD7;
-    text-decoration: none;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.azuriom-register-link:hover {
-    color: #F99741;
-    text-decoration: underline;
-}
-
-/* ── Panneau A2F ─────────────────────────────────────── */
-.login-2fa {
-    display: none;
-}
-
-.twofa-icon {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.twofa-title {
-    color: #F5F5F5;
-    font-family: 'Agenor';
-    font-size: 1.4rem;
-    font-weight: 900;
-    margin-bottom: 6px;
-}
-
-.twofa-subtitle {
-    color: #D9D9D9;
-    font-family: 'Agenor';
-    font-size: 0.95rem;
-    font-weight: 400;
-    margin-bottom: 4px;
-    line-height: 1.5;
-}
-
-.azuriom-2fa-code {
-    color: white;
-    background: #F99741B3;
-    border: none;
-    border-radius: 10px;
-    width: 40% !important;
-    height: 70px;
-    padding: 0.5rem 1rem 0.4rem;
-    margin-top: 10px;
-    font-family: 'Agenor';
-    font-size: 2rem;
-    font-weight: 900;
-    text-align: center;
-    letter-spacing: 0.4rem;
-}
-
-.azuriom-2fa-code::placeholder {
-    color: #ffffff99;
-    letter-spacing: 0.3rem;
-}
-
-.cancel-2fa {
-    background: #555555;
-    color: #D9D9D9;
-    border: none;
-    border-radius: 10px;
-    padding-top: 6px;
-    font-family: 'Agenor';
-    font-size: 20px;
-    font-weight: 900;
-    margin: 150px 10px 0;
-    width: 220px;
-    height: 60px;
-    text-align: center;
-    box-shadow: 0 4px 0 0 #333333;
-    cursor: pointer;
-}
-
-.cancel-2fa:hover {
-    background: #444444;
 }

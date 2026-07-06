@@ -8,8 +8,11 @@ const Store = require('electron-store');
 
 const UpdateWindow = require("./assets/js/windows/updateWindow.js");
 const MainWindow = require("./assets/js/windows/mainWindow.js");
+const pkg = require("../package.json");
 
 let dev = process.env.NODE_ENV === 'dev';
+
+if (process.platform === 'win32') app.setAppUserModelId(pkg.name);
 
 if (dev) {
     let appPath = path.resolve('./data/Launcher').replace(/\\/g, '/');
@@ -70,7 +73,7 @@ ipcMain.on('main-window-maximize', () => {
 })
 
 ipcMain.on('main-window-hide', () => MainWindow.getWindow().hide())
-ipcMain.on('main-window-show', () => MainWindow.getWindow().show())
+ipcMain.on('main-window-show', () => MainWindow.showWindow())
 
 ipcMain.handle('Microsoft-window', async (_, client_id) => {
     return await new Microsoft(client_id).getAuth();

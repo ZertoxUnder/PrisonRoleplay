@@ -123,53 +123,6 @@ class Launcher {
         }
     }
 
-    extractBanReason(data) {
-        const RAW_CODES = ['userbanned', 'banned', 'suspended', 'suspendu', 'user_banned', 'ban', 'true'];
-        const candidates = [
-            data.ban_reason,
-            data.reason_message,
-            data.ban_message,
-            data.reason !== 'banned' && data.reason !== 'ban' ? data.reason : null,
-            data.message
-        ];
-        for (const candidate of candidates) {
-            if (!candidate) continue;
-            const clean = String(candidate).trim();
-            if (clean && !RAW_CODES.includes(clean.toLowerCase())) return clean;
-        }
-        return null;
-    }
-
-    async checkAzuriomBan(account) {
-        try {
-            const azuriomUrl = this.config.azuriom_url || this.config.url;
-            if (!azuriomUrl || !account.access_token) return { banned: false };
-
-            const response = await fetch(`${azuriomUrl}/api/auth/verify`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ access_token: account.access_token })
-            });
-
-            const data = await response.json().catch(() => ({}));
-            const msg  = (data.message || '').toLowerCase();
-
-            if (
-                data.reason  === 'banned' ||
-                data.banned  === true     ||
-                msg.includes('banned')    ||
-                msg.includes('banni')     ||
-                msg.includes('suspendu')
-            ) {
-                return { banned: true, reason: this.extractBanReason(data) };
-            }
-
-            return { banned: false };
-        } catch {
-            return { banned: false };
-        }
-    }
-
     createPanels(...panels) {
         let panelsElem = document.querySelector('.panels')
         for (let panel of panels) {
@@ -197,25 +150,7 @@ class Launcher {
                     continue
                 }
 
-                if (account.meta.type === 'Azuriom') {
-                    const banCheck = await this.checkAzuriomBan(account);
-                    if (banCheck.banned) {
-                        await this.db.deleteData('accounts', account_ID);
-                        if (account_ID == account_selected) {
-                            configClient.account_selected = null;
-                            await this.db.updateData('configClient', configClient);
-                        }
-                        new popup().openPopup({
-                            title: '⛓ Compte banni',
-                            content: banCheck.reason
-                                ? `Le compte <b>${account.name}</b> a été banni.<br><br><b>Raison :</b> ${banCheck.reason}`
-                                : `Le compte <b>${account.name}</b> a été banni du serveur.`,
-                            color: '#DC8436',
-                            options: true
-                        });
-                        continue;
-                    }
-                } else {
+                if (account.meta.type !== 'Mojang') {
                     console.error(`[Account] ${account.name}: Account Type Not Found`);
                     await this.db.deleteData('accounts', account_ID)
                     if (account_ID == account_selected) {

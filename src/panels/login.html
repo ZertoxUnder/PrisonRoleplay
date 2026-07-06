@@ -1,46 +1,15 @@
 <div class="container">
 
-    <!-- Panneau principal : email + mot de passe -->
+    <!-- Panneau principal : compte offline -->
     <div class="login-home login-tabs">
         <!--<img src="assets/images/logo.png" alt="Logo : PrisonRP" class="logo-img">-->
 
         <div class="input-login">
-            <input type="text" class="azuriom-email" placeholder="Pseudonyme"/>
-            <div class="password-wrapper">
-                <input type="password" class="azuriom-password" placeholder="Mot de passe"/>
-                <button class="toggle-password" tabindex="-1" aria-label="Afficher le mot de passe">
-                    <span class="eye-icon eye-closed"></span>
-                </button>
-            </div>
+            <input type="text" class="offline-username" placeholder="Pseudonyme" maxlength="16"/>
         </div>
 
         <div class="login-options">
-            <button class="connect connect-azuriom">Connexion</button>
-            <p><a href="#" class="azuriom-register-link">Pas de compte ? S'inscrire !</a></p>
-        </div>
-    </div>
-
-    <!-- Panneau A2F : affiché uniquement si le compte a la 2FA activée -->
-    <div class="login-2fa login-tabs">
-        <div class="twofa-icon">🔐</div>
-        <div class="twofa-title">Authentification à deux facteurs</div>
-        <div class="twofa-subtitle">Entrez le code à 6 chiffres<br>généré par votre application</div>
-
-        <div class="input-login">
-            <input
-                type="text"
-                class="azuriom-2fa-code"
-                placeholder="000000"
-                maxlength="6"
-                autocomplete="off"
-                inputmode="numeric"
-                pattern="[0-9]*"
-            />
-        </div>
-
-        <div class="login-options">
-            <button class="connect connect-2fa">Valider</button>
-            <button class="cancel cancel-2fa">Retour</button>
+            <button class="connect connect-offline">Jouer</button>
         </div>
     </div>
 
