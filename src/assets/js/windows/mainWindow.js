@@ -20,7 +20,7 @@ function destroyWindow() {
 function createWindow() {
     destroyWindow();
     mainWindow = new BrowserWindow({
-        title: pkg.preductname,
+        title: pkg.productName,
         width: 1280,
         height: 720,
         minWidth: 980,

@@ -1,6 +1,6 @@
 {
     "name": "PrisonRP-Launcher",
-    "preductname": "PrisonRP Launcher",
+    "productName": "PrisonRP Launcher",
     "version": "2.1.0",
     "description": "Launcher Mincraft pour le serveur PrisonRP",
     "main": "src/app.js",

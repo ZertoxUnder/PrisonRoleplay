@@ -25,6 +25,10 @@ async function appdata() {
     return await ipcRenderer.invoke('appData').then(path => path)
 }
 
+function getDataDirectory(launcherConfig, instance) {
+    return launcherConfig?.dataDirectory || instance?.name || launcherConfig?.name || 'prisonrp'
+}
+
 async function setStatus(opt) {
     let nameServerElement = document.querySelector('.server-status-name')
     let statusServerElement = document.querySelector('.server-status-text')
@@ -64,6 +68,7 @@ export {
     logger,
     popup,
     slider as Slider,
+    getDataDirectory,
     pkg,
     setStatus
 }

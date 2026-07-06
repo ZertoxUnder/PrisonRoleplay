@@ -1,4 +1,4 @@
-import { changePanel, database, Slider, config, setStatus, appdata } from '../utils.js'
+import { changePanel, database, Slider, config, setStatus, appdata, getDataDirectory } from '../utils.js'
 const os = require('os');
 
 class Settings {
@@ -129,9 +129,11 @@ class Settings {
 
     async javaPath() {
         let javaPathText = document.querySelector(".java-path-txt")
-        javaPathText.textContent = `${await appdata()}/.${this.config.dataDirectory}/runtime`;
-
         let configClient = await this.db.readData('configClient')
+        let instancesList = await config.getInstanceList()
+        let instance = instancesList.find(i => i.name == configClient?.instance_selct)
+        javaPathText.textContent = `${await appdata()}/.${getDataDirectory(this.config, instance)}/runtime`;
+
         let javaPath = configClient?.java_config?.java_path || 'Utiliser la version de java livre avec le launcher';
         let javaPathInputTxt = document.querySelector(".java-path-input-text");
         let javaPathInputFile = document.querySelector(".java-path-input-file");

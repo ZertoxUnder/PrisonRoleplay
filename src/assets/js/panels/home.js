@@ -1,4 +1,4 @@
-import { config, database, logger, changePanel, appdata, setStatus, pkg, popup } from '../utils.js'
+import { config, database, logger, changePanel, appdata, setStatus, pkg, popup, getDataDirectory } from '../utils.js'
 
 const { Launch } = require('minecraft-java-core')
 const { ipcRenderer } = require('electron')
@@ -132,7 +132,7 @@ class Home {
             url: options.url,
             authenticator: authenticator,
             timeout: 10000,
-            path: `${await appdata()}/.${this.config.dataDirectory}`,
+            path: `${await appdata()}/.${getDataDirectory(this.config, options)}`,
             instance: options.name,
             version: options.loadder.minecraft_version,
             detached: configClient.launcher_config.closeLauncher == "close-all" ? false : true,
