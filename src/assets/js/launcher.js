@@ -1,17 +1,9 @@
-/**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
- */
-// import panel
 import Login from './panels/login.js';
 import Home from './panels/home.js';
 import Settings from './panels/settings.js';
 
-// import modules
-import { logger, config, changePanel, database, popup, setBackground, accountSelect, addAccount, pkg } from './utils.js';
-const { AZauth, Microsoft, Mojang } = require('minecraft-java-core');
+import { logger, config, changePanel, database, popup, pkg } from './utils.js';
 
-// libs
 const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const os = require('os');
@@ -20,11 +12,11 @@ class Launcher {
     async init() {
         this.initLog();
         console.log('Initializing Launcher...');
-        this.shortcut()
-        await setBackground()
+        this.shortcut();
+        this.setBackground();
         this.initFrame();
         this.config = await config.GetConfig().then(res => res).catch(err => err);
-        if (await this.config.error) return this.errorConnect()
+        if (await this.config.error) return this.errorConnect();
         this.db = new database();
         await this.initConfigClient();
         this.createPanels(Login, Home, Settings);
@@ -50,6 +42,19 @@ class Launcher {
     }
 
 
+    setBackground() {
+        const fs = require('fs');
+        const nodePath = require('path');
+        const bgDir = nodePath.join(__dirname, 'assets', 'images', 'background');
+        const files = fs.readdirSync(bgDir).filter(f => !fs.statSync(nodePath.join(bgDir, f)).isDirectory());
+        if (files.length) {
+            const bg = nodePath.join(bgDir, files[Math.floor(Math.random() * files.length)]);
+            document.body.style.backgroundImage = `url('${bg.replace(/\\/g, '/')}')` ;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+        }
+    }
+
     errorConnect() {
         new popup().openPopup({
             title: this.config.error.code,
@@ -62,25 +67,29 @@ class Launcher {
 
     initFrame() {
         console.log('Initializing Frame...')
-        const platform = os.platform() === 'darwin' ? "darwin" : "other";
+        document.querySelector('.other .frame').classList.toggle('hide');
 
-        document.querySelector(`.${platform} .frame`).classList.toggle('hide')
-
-        document.querySelector(`.${platform} .frame #minimize`).addEventListener('click', () => {
+        document.querySelector('.other .frame #minimize').addEventListener('click', () => {
             ipcRenderer.send('main-window-minimize');
         });
 
-        let maximized = false;
-        let maximize = document.querySelector(`.${platform} .frame #maximize`);
+        let maximize = document.querySelector('.other .frame #maximize');
         maximize.addEventListener('click', () => {
-            if (maximized) ipcRenderer.send('main-window-maximize')
-            else ipcRenderer.send('main-window-maximize');
-            maximized = !maximized
-            maximize.classList.toggle('icon-maximize')
-            maximize.classList.toggle('icon-restore-down')
+            ipcRenderer.send('main-window-maximize');
         });
 
-        document.querySelector(`.${platform} .frame #close`).addEventListener('click', () => {
+        // L'icône est mise à jour uniquement quand le main process confirme
+        // l'état (évite le désynchronisation si setBounds échoue)
+        ipcRenderer.on('window-maximized', () => {
+            maximize.classList.remove('icon-maximize');
+            maximize.classList.add('icon-restore-down');
+        });
+        ipcRenderer.on('window-unmaximized', () => {
+            maximize.classList.remove('icon-restore-down');
+            maximize.classList.add('icon-maximize');
+        });
+
+        document.querySelector('.other .frame #close').addEventListener('click', () => {
             ipcRenderer.send('main-window-close');
         })
     }
@@ -92,7 +101,7 @@ class Launcher {
         if (!configClient) {
             await this.db.createData('configClient', {
                 account_selected: null,
-                instance_select: null,
+                instance_selct: null,
                 java_config: {
                     java_path: null,
                     java_memory: {
@@ -108,11 +117,56 @@ class Launcher {
                 },
                 launcher_config: {
                     download_multi: 5,
-                    theme: 'auto',
-                    closeLauncher: 'close-launcher',
-                    intelEnabledMac: true
+                    closeLauncher: 'close-launcher'
                 }
             })
+        }
+    }
+
+    extractBanReason(data) {
+        const RAW_CODES = ['userbanned', 'banned', 'suspended', 'suspendu', 'user_banned', 'ban', 'true'];
+        const candidates = [
+            data.ban_reason,
+            data.reason_message,
+            data.ban_message,
+            data.reason !== 'banned' && data.reason !== 'ban' ? data.reason : null,
+            data.message
+        ];
+        for (const candidate of candidates) {
+            if (!candidate) continue;
+            const clean = String(candidate).trim();
+            if (clean && !RAW_CODES.includes(clean.toLowerCase())) return clean;
+        }
+        return null;
+    }
+
+    async checkAzuriomBan(account) {
+        try {
+            const azuriomUrl = this.config.azuriom_url || this.config.url;
+            if (!azuriomUrl || !account.access_token) return { banned: false };
+
+            const response = await fetch(`${azuriomUrl}/api/auth/verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ access_token: account.access_token })
+            });
+
+            const data = await response.json().catch(() => ({}));
+            const msg  = (data.message || '').toLowerCase();
+
+            if (
+                data.reason  === 'banned' ||
+                data.banned  === true     ||
+                msg.includes('banned')    ||
+                msg.includes('banni')     ||
+                msg.includes('suspendu')
+            ) {
+                return { banned: true, reason: this.extractBanReason(data) };
+            }
+
+            return { banned: false };
+        } catch {
+            return { banned: false };
         }
     }
 
@@ -137,100 +191,38 @@ class Launcher {
         if (accounts?.length) {
             for (let account of accounts) {
                 let account_ID = account.ID
-                if (account.error) {
+
+                if (account.error || !account.meta) {
                     await this.db.deleteData('accounts', account_ID)
                     continue
                 }
-                if (account.meta.type === 'Xbox') {
-                    console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
-                    popupRefresh.openPopup({
-                        title: 'Connexion',
-                        content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
-                        color: 'var(--color)',
-                        background: false
-                    });
 
-                    let refresh_accounts = await new Microsoft(this.config.client_id).refresh(account);
-
-                    if (refresh_accounts.error) {
-                        await this.db.deleteData('accounts', account_ID)
+                if (account.meta.type === 'Azuriom') {
+                    const banCheck = await this.checkAzuriomBan(account);
+                    if (banCheck.banned) {
+                        await this.db.deleteData('accounts', account_ID);
                         if (account_ID == account_selected) {
-                            configClient.account_selected = null
-                            await this.db.updateData('configClient', configClient)
+                            configClient.account_selected = null;
+                            await this.db.updateData('configClient', configClient);
                         }
-                        console.error(`[Account] ${account.name}: ${refresh_accounts.errorMessage}`);
+                        new popup().openPopup({
+                            title: '⛓ Compte banni',
+                            content: banCheck.reason
+                                ? `Le compte <b>${account.name}</b> a été banni.<br><br><b>Raison :</b> ${banCheck.reason}`
+                                : `Le compte <b>${account.name}</b> a été banni du serveur.`,
+                            color: '#DC8436',
+                            options: true
+                        });
                         continue;
                     }
-
-                    refresh_accounts.ID = account_ID
-                    await this.db.updateData('accounts', refresh_accounts, account_ID)
-                    await addAccount(refresh_accounts)
-                    if (account_ID == account_selected) accountSelect(refresh_accounts)
-                } else if (account.meta.type == 'AZauth') {
-                    console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
-                    popupRefresh.openPopup({
-                        title: 'Connexion',
-                        content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
-                        color: 'var(--color)',
-                        background: false
-                    });
-                    let refresh_accounts = await new AZauth(this.config.online).verify(account);
-
-                    if (refresh_accounts.error) {
-                        this.db.deleteData('accounts', account_ID)
-                        if (account_ID == account_selected) {
-                            configClient.account_selected = null
-                            this.db.updateData('configClient', configClient)
-                        }
-                        console.error(`[Account] ${account.name}: ${refresh_accounts.message}`);
-                        continue;
-                    }
-
-                    refresh_accounts.ID = account_ID
-                    this.db.updateData('accounts', refresh_accounts, account_ID)
-                    await addAccount(refresh_accounts)
-                    if (account_ID == account_selected) accountSelect(refresh_accounts)
-                } else if (account.meta.type == 'Mojang') {
-                    console.log(`Account Type: ${account.meta.type} | Username: ${account.name}`);
-                    popupRefresh.openPopup({
-                        title: 'Connexion',
-                        content: `Refresh account Type: ${account.meta.type} | Username: ${account.name}`,
-                        color: 'var(--color)',
-                        background: false
-                    });
-                    if (account.meta.online == false) {
-                        let refresh_accounts = await Mojang.login(account.name);
-
-                        refresh_accounts.ID = account_ID
-                        await addAccount(refresh_accounts)
-                        this.db.updateData('accounts', refresh_accounts, account_ID)
-                        if (account_ID == account_selected) accountSelect(refresh_accounts)
-                        continue;
-                    }
-
-                    let refresh_accounts = await Mojang.refresh(account);
-
-                    if (refresh_accounts.error) {
-                        this.db.deleteData('accounts', account_ID)
-                        if (account_ID == account_selected) {
-                            configClient.account_selected = null
-                            this.db.updateData('configClient', configClient)
-                        }
-                        console.error(`[Account] ${account.name}: ${refresh_accounts.errorMessage}`);
-                        continue;
-                    }
-
-                    refresh_accounts.ID = account_ID
-                    this.db.updateData('accounts', refresh_accounts, account_ID)
-                    await addAccount(refresh_accounts)
-                    if (account_ID == account_selected) accountSelect(refresh_accounts)
                 } else {
                     console.error(`[Account] ${account.name}: Account Type Not Found`);
-                    this.db.deleteData('accounts', account_ID)
+                    await this.db.deleteData('accounts', account_ID)
                     if (account_ID == account_selected) {
                         configClient.account_selected = null
-                        this.db.updateData('configClient', configClient)
+                        await this.db.updateData('configClient', configClient)
                     }
+                    continue;
                 }
             }
 
@@ -238,18 +230,15 @@ class Launcher {
             configClient = await this.db.readData('configClient')
             account_selected = configClient ? configClient.account_selected : null
 
-            if (!account_selected) {
+            if (!account_selected && accounts.length) {
                 let uuid = accounts[0].ID
-                if (uuid) {
-                    configClient.account_selected = uuid
-                    await this.db.updateData('configClient', configClient)
-                    accountSelect(uuid)
-                }
+                configClient.account_selected = uuid
+                await this.db.updateData('configClient', configClient)
             }
 
             if (!accounts.length) {
-                config.account_selected = null
-                await this.db.updateData('configClient', config);
+                configClient.account_selected = null
+                await this.db.updateData('configClient', configClient);
                 popupRefresh.closePopup()
                 return changePanel("login");
             }

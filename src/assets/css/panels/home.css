@@ -3,23 +3,18 @@
     height: 100%;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
 }
-
-/*******************************************************************************
- *                                                                             *
- * Status server                                                               *
- *                                                                             *
- ******************************************************************************/
 
 .status-server {
     position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--background);
+    background: #292929;
     width: 25rem;
     height: 3rem;
-    color: var(--color);
+    color: #F5F5F5;
     border-radius: 10px;
     margin-top: 3rem;
     padding: 1rem;
@@ -32,7 +27,7 @@
 
 .server-status-name {
     font-size: 1.5rem;
-    color: var(--color);
+    color: #F5F5F5;
 }
 
 .server-status-text {
@@ -45,7 +40,7 @@
 }
 
 .status-player-count {
-    background: var(--shadow);
+    background: #191919b3;
     min-width: 3rem;
     height: 3rem;
     border-radius: 10px;
@@ -64,7 +59,7 @@
     top: 10px;
     right: 10px;
     border-radius: 15px;
-    border: solid 5px var(--background);
+    border: solid 5px #292929;
     background: #1AC707;
 }
 
@@ -79,171 +74,24 @@
     display: flex;
 }
 
-/*******************************************************************************
- *                                                                             *
- * news server                                                                 *
- *                                                                             *
- ******************************************************************************/
-
-.new-tab {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 85%;
-    height: 100%;
-}
-
-.titre-tab-new {
-    margin-top: 1rem;
-    font-size: 2rem;
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-    background: var(--background-transparent);
-    color: var(--color);
-}
-
-.news-list {
-    width: 90%;
-    height: 100%;
-    border-radius: 10px;
-    margin: 1rem 0;
-}
-
-.news-block {
-    width: 100%;
-    margin: 0 0 1rem 0;
-    border-radius: 10px;
-    background: var(--background-transparent);
-}
-
-.news-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    align-items: center;
-}
-
-.header-text .title {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    font-size: 1.2rem;
-    text-align: center;
-}
-
-.news-header .date {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.news-content .bbWrapper {
-    padding: 0 1.5rem;
-    padding-bottom: 1rem;
-    font-size: 1.2rem;
-
-}
-
-.news-content .bbWrapper p {
-    font-weight: 100;
-    margin: 0;
-
-}
-
-.news-content .bbWrapper .news-author {
-    margin-top: 1rem;
-    text-align: end;
-    font-size: 0.8rem;
-}
-
-.news-content .bbWrapper .news-author span {
-    font-weight: 700;
-}
-
-/*******************************************************************************
- *                                                                             *
- * social server                                                               *
- *                                                                             *
- ******************************************************************************/
-
-.social-tab {
-    position: absolute;
-    display: flex;
-    bottom: 0;
-    right: 0;
-    width: 15%;
-    height: calc(80% - 1rem);
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-
-.social-list {
-    border-radius: 10px;
-    height: 100%;
-}
-
-.social-block {
-    display: flex;
-    background: var(--background-transparent);
-    width: 90px;
-    height: 90px;
-    margin-bottom: 1rem;
-    border-radius: 10px;
-    font-size: 2rem;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-}
-
-.social-block .icon-social {
-    pointer-events: none;
-    background-repeat: no-repeat;
-    height: 55%;
-    width: 55%;
-    filter: var(--svg-color);
-}
-
-/*******************************************************************************
- *                                                                             *
- * sidebar                                                                     *
- *                                                                             *
- ******************************************************************************/
-
 .sidebar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    width: 91%;
     height: 90px;
-    background: var(--background-transparent);
-}
-
-.player-options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 15px;
-    height: 3rem;
-    margin: 0 1.5rem;
-}
-
-.player-head {
-    background: url('../../images/default/setve.png'), no-repeat;
-    background-size: cover;
-    image-rendering: pixelated;
-    transition: var(--transition);
-    height: 3rem;
-    width: 3rem;
-    pointer-events: none;
-    border-radius: 15px;
+    position: absolute;
+    bottom: 0;
 }
 
 .player-menu {
-    color: var(--element-color);
+    color: #00bd7a;
     transform: rotate(270deg);
     pointer-events: none;
 }
 
 .play-elements {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -254,21 +102,27 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
-    border: solid 3px var(--element-color);
-    border-radius: 15px;
-    height: 3.2rem;
-    padding-right: 1.9rem;
+    border: none;
+    border-radius: 10px;
+    background: #D9D9D9;
+    box-shadow: 0px 4px 0px 0px #DC8436;
+    cursor: pointer;
+    width: 220px;
+    height: 60px;
+    margin-bottom: 44px;
 }
 
 .play-btn {
     border: none;
     border-radius: 10px;
     background: none;
-    color: var(--color);
-    font-size: 2rem;
-    font-weight: bolder;
-    padding: 0 1.5rem;
+    color: #895322;
+    padding-top: 6px;
+    font-family: 'Agenor';
+    font-size: 20px;
+    font-weight: 900;
     pointer-events: none;
+    width: 100%;
 }
 
 .instance-select {
@@ -277,10 +131,10 @@
     position: absolute;
     right: -3;
     top: -2;
-    color: var(--element-color);
+    color: #DC8436;
     font-size: 1rem;
     height: calc(100% - 1px);
-    border: solid 3px var(--element-color);
+    border: solid 3px #DC8436;
     text-align: center;
     border-radius: 15px;
     padding: 0 0.5rem;
@@ -295,31 +149,46 @@
 .info-starting-game {
     display: none;
     text-align: center;
+    width: 220px;
+    height: 60px;
+    border: none;
+    border-radius: 10px;
+    background: #D9D9D9;
+    box-shadow: 0px 4px 0px 0px #DC8436;
+    margin-bottom: 44px;
+}
+
+.info-starting-game-text {
+    margin-top: 0.5rem;
+    color: #895322;
 }
 
 .progress-bar {
     appearance: none;
     height: 10px;
-    margin: 0.5rem 0;
+    margin: 0.3rem 0;
 }
 
 .progress-bar::-webkit-progress-bar {
-    background-color: var(--background);
-    border: solid 1px var(--element-color);
+    background-color: #292929;
+    border: solid 1px #DC8436;
     border-radius: 10px;
 }
 
 .progress-bar::-webkit-progress-value {
-    background-color: var(--element-color);
+    background-color: #DC8436;
     border-radius: 10px;
 }
 
 .settings-btn {
-    width: 3rem;
-    height: 3rem;
-    font-size: 3rem;
-    color: var(--element-color);
-    margin: 0 1.5rem;
+    width: 70px;
+    height: 70px;
+    font-size: 70;
+    color: #D9D9D9;
+    position: absolute;
+    bottom: 59px;
+    left: 13px;
+    cursor: pointer;
 }
 
 .instance-popup {
@@ -333,11 +202,12 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    border-radius: 53px;
 }
 
 .instances-tab {
     position: relative;
-    background: var(--background);
+    background: #292929;
     border-radius: 10px;
     padding: 1rem 3rem;
 }
@@ -347,7 +217,7 @@
     display: flex;
     top: 10px;
     right: 10px;
-    background: var(--shadow);
+    background: #191919b3;
     height: 30px;
     width: 30px;
     border-radius: 10px;
@@ -361,7 +231,7 @@
 }
 
 .instance-elements {
-    background: var(--background-element);
+    background: #424242;
     text-align: center;
     border-radius: 10px;
     margin: 0.5rem 0;
@@ -370,9 +240,9 @@
 }
 
 .instance-elements:hover {
-    background: var(--element-color);
+    background: #DC8436;
 }
 
 .active-instance {
-    background: var(--element-color);
+    background: #DC8436;
 }

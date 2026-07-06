@@ -1,22 +1,26 @@
 .settings .container {
     display: flex;
     height: 100%;
+    overflow: hidden;
 }
 
 .nav-settings {
     width: 20%;
     height: 100%;
-    background: var(--background);
+    background: #895322;
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: center;
     font-size: 2.5rem;
+    border-bottom-left-radius: 50px;
+    border-top-left-radius: 50px;
 }
 
 .nav-settings p {
     font-size: 60%;
-    margin-top: 80px;
+    margin-top: -40px;
+    margin-bottom: 40px;
 }
 
 .nav-box {
@@ -27,13 +31,18 @@
 }
 
 .nav-box #save {
-    border: solid 4px var(--background-element);
+    border: solid 4px #B06C3B;
     margin: 3rem;
+}
+
+.nav-box #disconnect {
+    border: solid 4px #B06C3B;
+    margin: -2rem;
 }
 
 .nav-settings-btn {
     font-size: 50%;
-    border: solid 4px var(--element-color);
+    border: solid 4px #B06C3B;
     padding: 5px 10px;
     border-radius: 10px;
     width: 70%;
@@ -43,7 +52,7 @@
 }
 
 .active-settings-BTN {
-    background: var(--element-color);
+    background: #EB8F4E;
 }
 
 .container-settings {
@@ -60,7 +69,7 @@
 }
 
 .settings-elements-box {
-    background: var(--background-element);
+    background: #424242;
     width: 80%;
     border-radius: 10px;
     padding: 1.5rem 2rem;
@@ -86,8 +95,8 @@
     padding: 0.5rem 2rem;
     border-radius: 2rem;
     text-align: center;
-    background: var(--background-transparent);
-    color: var(--color);
+    background: #2c2c2ccc;
+    color: #F5F5F5;
 }
 
 .settings-elements {
@@ -104,112 +113,6 @@
 .content-evenly {
     justify-content: space-evenly;
 }
-
-/*******************************************************************************
- *                                                                             *
- * account tab                                                                 *
- *                                                                             *
- ******************************************************************************/
-.accounts-list {
-    max-height: 90%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-content: flex-start;
-}
-
-.account {
-    background: var(--background-element);
-    border: solid 4px var(--background-element);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: calc(400px - 8px);
-    height: calc(100px - 8px);
-    margin: 1rem;
-    border-radius: 15px;
-}
-
-.account-select {
-    border: solid 4px var(--element-color);
-}
-
-.accounts-list #add {
-    justify-content: center;
-    cursor: pointer;
-}
-
-.add-profile {
-    width: 70px;
-    height: 70px;
-    font-size: 3rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    pointer-events: none;
-}
-
-.add-text-profile {
-    font-size: 1.5rem;
-    pointer-events: none;
-}
-
-.profile-image {
-    width: 70px;
-    height: 70px;
-    background: url(../../images/default/setve.png);
-    background-size: cover;
-    border-radius: 15px;
-    pointer-events: none;
-    image-rendering: pixelated;
-}
-
-.profile-infos {
-    text-align: center;
-    width: 10rem;
-    pointer-events: none;
-
-}
-
-.profile-pseudo {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 1.5rem;
-    pointer-events: none;
-
-}
-
-.profile-uuid {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    pointer-events: none;
-
-}
-
-.delete-profile {
-    width: 70px;
-    height: 70px;
-    background: var(--background-transparent);
-    border-radius: 15px;
-    font-size: 3rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #ff2c2c;
-    cursor: pointer;
-}
-
-.delete-profile-icon {
-    pointer-events: none;
-}
-
-/*******************************************************************************
- *                                                                             *
- * java tab                                                                    *
- *                                                                             *
- ******************************************************************************/
 
 .memory-slider {
     position: relative;
@@ -234,8 +137,8 @@
     display: block;
     width: 20px;
     height: 10px;
-    background: #bbb;
-    border: 4px solid var(--element-color);
+    background: #EB8F4E;
+    border: 4px solid #B06C3B;
     transition: background-color .2s, border .2s;
     border-radius: 18px;
     cursor: pointer;
@@ -244,7 +147,7 @@
 .slider-touch-left span:after,
 .slider-touch-right span:after {
     content: attr(value);
-    color: var(--element-color);
+    color: #B06C3B;
     font: normal normal bold 12px/18px Poppins;
     white-space: nowrap;
     pointer-events: none;
@@ -272,19 +175,19 @@
     display: block;
     height: 100%;
     width: 0%;
-    background: var(--element-color);
+    background: #B06C3B;
     transition: background-color .2s;
 }
 
 .ram-info-block {
     font-size: 0.9rem;
-    color: var(--color);
+    color: #F5F5F5;
 }
 
 .java-path-input-text {
-    background: var(--shadow);
+    background: #191919b3;
     border: none;
-    color: var(--color);
+    color: #F5F5F5;
     padding: 0.5rem 1rem;
     border-radius: 15px;
     width: 50%;
@@ -301,26 +204,21 @@
 
 .java-path-btn {
     padding: 0.3rem 1rem;
-    background: var(--element-color);
+    background: #B06C3B;
     border-radius: 15px;
     margin: 0 1rem;
     cursor: pointer;
 }
 
-/*******************************************************************************
- *                                                                             *
- * resolution tab                                                              *
- *                                                                             *
- ******************************************************************************/
 .input-size-element {
     display: flex;
     align-items: center;
 }
 
 .input-resolution {
-    background: var(--shadow);
+    background: #191919b3;
     border: none;
-    color: var(--color);
+    color: #F5F5F5;
     padding: 0.5rem 1rem;
     border-radius: 15px;
     text-align: center;
@@ -338,22 +236,16 @@
 
 .size-btn {
     padding: 0.3rem 1rem;
-    background: var(--element-color);
+    background: #B06C3B;
     border-radius: 15px;
     margin: 0 1rem;
     cursor: pointer;
 }
 
-/*******************************************************************************
- *                                                                             *
- * Launcher tab                                                                *
- *                                                                             *
- ******************************************************************************/
-
 .input-max-files {
-    background: var(--shadow);
+    background: #191919b3;
     border: none;
-    color: var(--color);
+    color: #F5F5F5;
     padding: 0.5rem 1rem;
     border-radius: 15px;
     text-align: center;
@@ -363,51 +255,22 @@
 
 .max-files-btn {
     padding: 0.3rem 1rem;
-    background: var(--element-color);
+    background: #B06C3B;
     border-radius: 15px;
     margin: 0 1rem;
     cursor: pointer;
-}
-
-.theme-btn {
-    margin: 0 1rem;
-    padding: calc(0.1rem + 4px) calc(1.5rem + 4px);
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-.theme-btn-clair {
-    background: var(--light-color);
-    color: var(--dark-color);
-    border: 2px solid var(--dark-color);
-}
-
-.theme-btn-sombre {
-    background: var(--dark-color);
-    color: var(--light-color);
-    border: 2px solid var(--color);
-}
-
-.theme-btn-auto {
-    background: var(--background);
-    color: var(--color);
-    border: 2px solid var(--color);
-}
-
-.active-theme {
-    border: 4px solid var(--element-color);
 }
 
 .close-btn {
     font-size: 0.95rem;
     width: 200px;
     text-align: center;
-    border: 4px solid var(--color);
+    border: 4px solid #F5F5F5;
     border-radius: 15px;
     padding: 1rem;
     cursor: pointer;
 }
 
 .active-close {
-    border: 4px solid var(--element-color);
+    border: 4px solid #EB8F4E;
 }

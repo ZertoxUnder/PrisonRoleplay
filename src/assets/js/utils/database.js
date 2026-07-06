@@ -34,7 +34,6 @@ class database {
         await this.initStore();
         let tableData = this.store.get(tableName, []);
 
-        // Générer un nouvel ID
         const maxId = tableData.length > 0
             ? Math.max(...tableData.map(item => item.ID || 0))
             : 0;

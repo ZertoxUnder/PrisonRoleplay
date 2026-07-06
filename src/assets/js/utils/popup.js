@@ -1,8 +1,3 @@
-/**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
- */
-
 const { ipcRenderer } = require('electron');
 
 export default class popup {
@@ -16,8 +11,7 @@ export default class popup {
 
     openPopup(info) {
         this.popup.style.display = 'flex';
-        if (info.background == false) this.popup.style.background = 'none';
-        else this.popup.style.background = '#000000b3'
+        this.popup.style.background = 'none';
         this.popupTitle.innerHTML = info.title;
         this.popupContent.style.color = info.color ? info.color : '#e21212';
         this.popupContent.innerHTML = info.content;
@@ -25,6 +19,11 @@ export default class popup {
         if (info.options) this.popupOptions.style.display = 'flex';
 
         if (this.popupOptions.style.display !== 'none') {
+            // Remplacer le bouton pour supprimer les anciens listeners accumulés
+            const newBtn = this.popupButton.cloneNode(true);
+            this.popupButton.parentNode.replaceChild(newBtn, this.popupButton);
+            this.popupButton = newBtn;
+
             this.popupButton.addEventListener('click', () => {
                 if (info.exit) return ipcRenderer.send('main-window-close');
                 this.closePopup();

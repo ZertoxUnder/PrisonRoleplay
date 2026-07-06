@@ -1,10 +1,4 @@
-/**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
- */
-
-import { changePanel, accountSelect, database, Slider, config, setStatus, popup, appdata, setBackground } from '../utils.js'
-const { ipcRenderer } = require('electron');
+import { changePanel, database, Slider, config, setStatus, appdata } from '../utils.js'
 const os = require('os');
 
 class Settings {
@@ -13,7 +7,6 @@ class Settings {
         this.config = config;
         this.db = new database();
         this.navBTN()
-        this.accounts()
         this.ram()
         this.javaPath()
         this.resolution()
@@ -21,7 +14,7 @@ class Settings {
     }
 
     navBTN() {
-        document.querySelector('.nav-box').addEventListener('click', e => {
+        document.querySelector('.nav-box').addEventListener('click', async e => {
             if (e.target.classList.contains('nav-settings-btn')) {
                 let id = e.target.id
 
@@ -29,82 +22,51 @@ class Settings {
                 let activeContainerSettings = document.querySelector('.active-container-settings')
 
                 if (id == 'save') {
-                    if (activeSettingsBTN) activeSettingsBTN.classList.toggle('active-settings-BTN');
-                    document.querySelector('#account').classList.add('active-settings-BTN');
+                    changePanel('home');
+                    if (activeSettingsBTN) activeSettingsBTN.classList.remove('active-settings-BTN');
+                    document.querySelector('#java').classList.add('active-settings-BTN');
+                    if (activeContainerSettings) activeContainerSettings.classList.remove('active-container-settings');
+                    document.querySelector(`#java-tab`).classList.add('active-container-settings');
+                    return;
+                }
 
+                if (id == "disconnect") {
+                    let configClient = await this.db.readData('configClient');
+                    const selectedId = configClient?.account_selected;
+
+                    await this.db.deleteData('accounts', selectedId);
+
+                    if (activeSettingsBTN) activeSettingsBTN.classList.toggle('active-settings-BTN');
+                    document.querySelector('#java').classList.add('active-settings-BTN');
                     if (activeContainerSettings) activeContainerSettings.classList.toggle('active-container-settings');
-                    document.querySelector(`#account-tab`).classList.add('active-container-settings');
-                    return changePanel('home')
+                    document.querySelector(`#java-tab`).classList.add('active-container-settings');
+
+                    const remaining = await this.db.readAllData('accounts');
+
+                    if (remaining.length > 0) {
+                        configClient.account_selected = remaining[0].ID;
+                        const newConfig = await this.setInstance(remaining[0]);
+                        configClient.instance_selct = newConfig.instance_selct;
+                        await this.db.updateData('configClient', configClient);
+                    } else {
+                        configClient.account_selected = null;
+                        await this.db.updateData('configClient', configClient);
+                    }
+
+                    return changePanel('login');
                 }
 
                 if (activeSettingsBTN) activeSettingsBTN.classList.toggle('active-settings-BTN');
                 e.target.classList.add('active-settings-BTN');
-
                 if (activeContainerSettings) activeContainerSettings.classList.toggle('active-container-settings');
                 document.querySelector(`#${id}-tab`).classList.add('active-container-settings');
             }
         })
     }
 
-    accounts() {
-        document.querySelector('.accounts-list').addEventListener('click', async e => {
-            let popupAccount = new popup()
-            try {
-                let id = e.target.id
-                if (e.target.classList.contains('account')) {
-                    popupAccount.openPopup({
-                        title: 'Connexion',
-                        content: 'Veuillez patienter...',
-                        color: 'var(--color)'
-                    })
-
-                    if (id == 'add') {
-                        document.querySelector('.cancel-home').style.display = 'inline'
-                        return changePanel('login')
-                    }
-
-                    let account = await this.db.readData('accounts', id);
-                    let configClient = await this.setInstance(account);
-                    await accountSelect(account);
-                    configClient.account_selected = account.ID;
-                    return await this.db.updateData('configClient', configClient);
-                }
-
-                if (e.target.classList.contains("delete-profile")) {
-                    popupAccount.openPopup({
-                        title: 'Connexion',
-                        content: 'Veuillez patienter...',
-                        color: 'var(--color)'
-                    })
-                    await this.db.deleteData('accounts', id);
-                    let deleteProfile = document.getElementById(`${id}`);
-                    let accountListElement = document.querySelector('.accounts-list');
-                    accountListElement.removeChild(deleteProfile);
-
-                    if (accountListElement.children.length == 1) return changePanel('login');
-
-                    let configClient = await this.db.readData('configClient');
-
-                    if (configClient.account_selected == id) {
-                        let allAccounts = await this.db.readAllData('accounts');
-                        configClient.account_selected = allAccounts[0].ID
-                        accountSelect(allAccounts[0]);
-                        let newInstanceSelect = await this.setInstance(allAccounts[0]);
-                        configClient.instance_select = newInstanceSelect.instance_select
-                        return await this.db.updateData('configClient', configClient);
-                    }
-                }
-            } catch (err) {
-                console.error(err)
-            } finally {
-                popupAccount.closePopup();
-            }
-        })
-    }
-
     async setInstance(auth) {
         let configClient = await this.db.readData('configClient')
-        let instanceSelect = configClient.instance_select
+        let instanceSelect = configClient.instance_selct
         let instancesList = await config.getInstanceList()
 
         for (let instance of instancesList) {
@@ -113,7 +75,7 @@ class Settings {
                 if (whitelist !== auth.name) {
                     if (instance.name == instanceSelect) {
                         let newInstanceSelect = instancesList.find(i => i.whitelistActive == false)
-                        configClient.instance_select = newInstanceSelect.name
+                        configClient.instance_selct = newInstanceSelect.name
                         await setStatus(newInstanceSelect.status)
                     }
                 }
@@ -124,6 +86,10 @@ class Settings {
 
     async ram() {
         let config = await this.db.readData('configClient');
+        if (!config.java_config)     config.java_config     = { java_path: null, java_memory: { min: 2, max: 4 } };
+        if (!config.game_config)     config.game_config     = { screen_size: { width: 854, height: 480 } };
+        if (!config.launcher_config) config.launcher_config = { download_multi: 5, closeLauncher: 'close-launcher' };
+
         let totalMem = Math.trunc(os.totalmem() / 1073741824 * 10) / 10;
         let freeMem = Math.trunc(os.freemem() / 1073741824 * 10) / 10;
 
@@ -131,7 +97,7 @@ class Settings {
         document.getElementById("free-ram").textContent = `${freeMem} Go`;
 
         let sliderDiv = document.querySelector(".memory-slider");
-        sliderDiv.setAttribute("max", Math.trunc((80 * totalMem) / 100));
+        sliderDiv.setAttribute("max", Math.floor(totalMem));
 
         let ram = config?.java_config?.java_memory ? {
             ramMin: config.java_config.java_memory.min,
@@ -140,7 +106,7 @@ class Settings {
 
         if (totalMem < ram.ramMin) {
             config.java_config.java_memory = { min: 1, max: 2 };
-            this.db.updateData('configClient', config);
+            await this.db.updateData('configClient', config);
             ram = { ramMin: "1", ramMax: "2" }
         };
 
@@ -153,17 +119,17 @@ class Settings {
         maxSpan.setAttribute("value", `${ram.ramMax} Go`);
 
         slider.on("change", async (min, max) => {
-            let config = await this.db.readData('configClient');
             minSpan.setAttribute("value", `${min} Go`);
             maxSpan.setAttribute("value", `${max} Go`);
+            if (!config.java_config) config.java_config = { java_path: null, java_memory: {} };
             config.java_config.java_memory = { min: min, max: max };
-            this.db.updateData('configClient', config);
+            await this.db.updateData('configClient', config);
         });
     }
 
     async javaPath() {
         let javaPathText = document.querySelector(".java-path-txt")
-        javaPathText.textContent = `${await appdata()}/${process.platform == 'darwin' ? this.config.dataDirectory : `.${this.config.dataDirectory}`}/runtime`;
+        javaPathText.textContent = `${await appdata()}/.${this.config.dataDirectory}/runtime`;
 
         let configClient = await this.db.readData('configClient')
         let javaPath = configClient?.java_config?.java_path || 'Utiliser la version de java livre avec le launcher';
@@ -249,43 +215,6 @@ class Settings {
             maxDownloadFilesInput.value = 5
             configClient.launcher_config.download_multi = 5;
             await this.db.updateData('configClient', configClient);
-        })
-
-        let themeBox = document.querySelector(".theme-box");
-        let theme = configClient?.launcher_config?.theme || "auto";
-
-        if (theme == "auto") {
-            document.querySelector('.theme-btn-auto').classList.add('active-theme');
-        } else if (theme == "dark") {
-            document.querySelector('.theme-btn-sombre').classList.add('active-theme');
-        } else if (theme == "light") {
-            document.querySelector('.theme-btn-clair').classList.add('active-theme');
-        }
-
-        themeBox.addEventListener("click", async e => {
-            if (e.target.classList.contains('theme-btn')) {
-                let activeTheme = document.querySelector('.active-theme');
-                if (e.target.classList.contains('active-theme')) return
-                activeTheme?.classList.remove('active-theme');
-
-                if (e.target.classList.contains('theme-btn-auto')) {
-                    setBackground();
-                    theme = "auto";
-                    e.target.classList.add('active-theme');
-                } else if (e.target.classList.contains('theme-btn-sombre')) {
-                    setBackground(true);
-                    theme = "dark";
-                    e.target.classList.add('active-theme');
-                } else if (e.target.classList.contains('theme-btn-clair')) {
-                    setBackground(false);
-                    theme = "light";
-                    e.target.classList.add('active-theme');
-                }
-
-                let configClient = await this.db.readData('configClient')
-                configClient.launcher_config.theme = theme;
-                await this.db.updateData('configClient', configClient);
-            }
         })
 
         let closeBox = document.querySelector(".close-box");

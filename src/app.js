@@ -1,9 +1,4 @@
-/**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
- */
-
-const { app, ipcMain, nativeTheme } = require('electron');
+const { app, ipcMain, nativeTheme, screen } = require('electron');
 const { Microsoft } = require('minecraft-java-core');
 const { autoUpdater } = require('electron-updater')
 
@@ -52,11 +47,25 @@ ipcMain.on('update-window-progress-load', () => UpdateWindow.getWindow().setProg
 ipcMain.handle('path-user-data', () => app.getPath('userData'))
 ipcMain.handle('appData', e => app.getPath('appData'))
 
+// Plein écran manuel — setBounds fonctionne même avec resizable:false
+// et préserve les coins arrondis (contrairement à maximize() sur Windows)
+let _isManuallyMaximized = false;
+let _normalBounds = null;
+
 ipcMain.on('main-window-maximize', () => {
-    if (MainWindow.getWindow().isMaximized()) {
-        MainWindow.getWindow().unmaximize();
+    const win = MainWindow.getWindow();
+    if (!win) return;
+
+    if (_isManuallyMaximized) {
+        if (_normalBounds) win.setBounds(_normalBounds);
+        _isManuallyMaximized = false;
+        win.webContents.send('window-unmaximized');
     } else {
-        MainWindow.getWindow().maximize();
+        _normalBounds = win.getBounds();
+        const { workArea } = screen.getDisplayMatching(_normalBounds);
+        win.setBounds(workArea);
+        _isManuallyMaximized = true;
+        win.webContents.send('window-maximized');
     }
 })
 

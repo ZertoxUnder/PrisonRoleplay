@@ -1,11 +1,7 @@
-/**
- * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
- */
-
 const { app, BrowserWindow, Menu } = require("electron");
 const path = require("path");
 const os = require("os");
+const pkg = require("../../../../package.json");
 let dev = process.env.DEV_TOOL === 'open';
 let mainWindow = undefined;
 
@@ -22,18 +18,22 @@ function destroyWindow() {
 function createWindow() {
     destroyWindow();
     mainWindow = new BrowserWindow({
-        title: app.getName(),
+        title: pkg.preductname,
         width: 1280,
         height: 720,
         minWidth: 980,
         minHeight: 552,
-        resizable: true,
-        icon: `./src/assets/images/icon/icon.${os.platform() === "win32" ? "ico" : "png"}`,
-        frame: false,
+        resizable: false,
+        maximizable: false,
+        icon: path.join(app.getAppPath(), 'src', 'assets', 'images', 'icon.ico'),
+        frame: os.platform() !== 'win32',
         show: false,
+        transparent: true,
+        backgroundColor: '#00000000',
         webPreferences: {
             contextIsolation: false,
-            nodeIntegration: true
+            nodeIntegration: true,
+            devTools: true,
         },
     });
     Menu.setApplicationMenu(null);
